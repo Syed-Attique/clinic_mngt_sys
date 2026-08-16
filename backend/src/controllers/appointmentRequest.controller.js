@@ -1,4 +1,4 @@
-import { createAppointmentRequestService } from "../services/appointmentRequest.service.js";
+import { createAppointmentRequestService, processAppointmentRequestService } from "../services/appointmentRequest.service.js";
 
 export const createAppointmentRequest = (req, res) => {
     
@@ -50,4 +50,26 @@ export const createAppointmentRequest = (req, res) => {
 
     const appointmentRequest = createAppointmentRequestService(requestData)
     return res.status(201).json(appointmentRequest);
+};
+
+
+export const processAppointmentRequest = (req, res) => {
+
+    const requestId = req.params.requestId;
+    const status = req.body.status;
+
+    const validStatuses = ["APPROVED", "REJECTED"];
+
+    if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+            message: "Invalid status"
+        });
+    }
+
+    // Temporary until authentication is implemented
+    const administratorId = "ADMIN-000000001";
+
+    const updatedAppointmentRequest = processAppointmentRequestService(requestId,status,administratorId);
+
+    return res.status(200).json(updatedAppointmentRequest);
 };

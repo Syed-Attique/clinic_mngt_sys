@@ -8,9 +8,6 @@ const appointmentRouter = express.Router();
 
 appointmentRouter.get('/appointments', getAppointments);
 
-appointmentRouter.get(
-    '/appointments/:appointmentNumber',
-    getAppointment
-);
+appointmentRouter.get('/appointments/:appointmentNumber', getAppointment);
 
 export default appointmentRouter;

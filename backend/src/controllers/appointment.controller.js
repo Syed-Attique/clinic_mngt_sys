@@ -14,9 +14,7 @@ export const getAppointment = (req, res) => {
         });
     }
 
-    const appointment = getAppointmentService(
-        appointmentNumber
-    );
+    const appointment = getAppointmentService(appointmentNumber);
 
     if (!appointment) {
         return res.status(404).json({

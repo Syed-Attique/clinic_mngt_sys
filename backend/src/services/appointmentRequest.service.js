@@ -1,4 +1,4 @@
-import { getAppointmentService } from "./appointment.service.js";
+import { getAppointmentService, cancelAppointmentService } from "./appointment.service.js";
 import { AppError } from "../errors/AppError.js";
 
 const appointmentRequests = [];
@@ -11,7 +11,7 @@ export const createAppointmentRequestService = (requestData) => {
         throw new AppError("Appointment not found", 404);
     };
 
-    if (appointment.status === 'Cancelled') {
+    if (appointment.status === 'CANCELLED') {
         throw new AppError("Appointment is already cancelled", 409);
     };
 
@@ -36,6 +36,7 @@ export const createAppointmentRequestService = (requestData) => {
         reason: requestData.reason,
         requestedDateTime: requestData.requestedDateTime ?? null,
         status: 'PENDING',
+        administratorId: null,
         createdAt: new Date(),
         updatedAt: new Date()
     };
@@ -44,3 +45,34 @@ export const createAppointmentRequestService = (requestData) => {
     return appointmentRequest;
 
 }
+
+export const getAppointmentRequestService = (requestId) => {
+    return appointmentRequests.find(request => request.requestId === requestId);
+};
+
+export const processAppointmentRequestService = (requestId,status,administratorId) => {
+
+    const appointmentRequest = getAppointmentRequestService(requestId);
+
+    if (!appointmentRequest) {
+        throw new AppError("Appointment request not found", 404);
+    }
+
+    if (appointmentRequest.status !== "PENDING") {
+        throw new AppError(
+            `Appointment request has already been ${appointmentRequest.status.toLowerCase()}`,
+            409
+        );
+    }
+
+    if (appointmentRequest.requestType === 'CANCEL' && status === 'APPROVED') {
+        cancelAppointmentService(appointmentRequest.appointmentNumber);
+        appointmentRequest.status = status;
+        appointmentRequest.updatedAt = new Date();
+        appointmentRequest.administratorId = administratorId;
+        return appointmentRequest;
+    };
+    
+
+    // Processing logic comes here.
+};
